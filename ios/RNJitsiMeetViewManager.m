@@ -24,9 +24,17 @@ RCT_EXPORT_METHOD(initialize)
     RCTLogInfo(@"Initialize is deprecated in v2");
 }
 
-RCT_EXPORT_METHOD(call:(NSString *)urlString userInfo:(NSDictionary *)userInfo)
+RCT_EXPORT_METHOD(
+  call:(NSString *)urlString
+  userInfo:(NSDictionary *)userInfo
+  meetOptions:(NSDictionary *)meetOptions
+  meetFeatureFlags:(NSDictionary *)meetFeatureFlags
+)
 {
-    RCTLogInfo(@"Load URL %@", urlString);
+    // RCTLogInfo(@"Load URL %@", urlString);
+    // RCTLogInfo(@"Load meetOptions %@", meetOptions);
+    // RCTLogInfo(@"Load meetOptions VideoOnly %@", meetOptions[@"audioOnly"]);
+
     JitsiMeetUserInfo * _userInfo = [[JitsiMeetUserInfo alloc] init];
     if (userInfo != NULL) {
       if (userInfo[@"displayName"] != NULL) {
@@ -41,8 +49,22 @@ RCT_EXPORT_METHOD(call:(NSString *)urlString userInfo:(NSDictionary *)userInfo)
       }
     }
     dispatch_sync(dispatch_get_main_queue(), ^{
-        JitsiMeetConferenceOptions *options = [JitsiMeetConferenceOptions fromBuilder:^(JitsiMeetConferenceOptionsBuilder *builder) {        
+        JitsiMeetConferenceOptions *options = [JitsiMeetConferenceOptions fromBuilder:^(JitsiMeetConferenceOptionsBuilder *builder) {
             builder.room = urlString;
+            builder.videoMuted = [[meetOptions objectForKey:@"videoMuted"] boolValue];
+            builder.audioOnly = [[meetOptions objectForKey:@"audioOnly"] boolValue];
+            builder.audioMuted = [[meetOptions objectForKey:@"audioMuted"] boolValue];
+
+            [builder setFeatureFlag:@"chat.enabled" withBoolean:[[meetFeatureFlags objectForKey:@"chat.enabled"] boolValue]];
+            [builder setFeatureFlag:@"ios.recording.enabled" withBoolean:[[meetFeatureFlags objectForKey:@"ios.recording.enabled"] boolValue]];
+            [builder setFeatureFlag:@"live-streaming.enabled" withBoolean:[[meetFeatureFlags objectForKey:@"live-streaming.enabled"] boolValue]];
+            [builder setFeatureFlag:@"meeting-name.enabled" withBoolean:[[meetFeatureFlags objectForKey:@"meeting-name.enabled"] boolValue]];
+            [builder setFeatureFlag:@"meeting-password.enabled" withBoolean:[[meetFeatureFlags objectForKey:@"meeting-password.enabled"] boolValue]];
+            [builder setFeatureFlag:@"pip.enabled" withBoolean:[[meetFeatureFlags objectForKey:@"pip.enabled"] boolValue]];
+            [builder setFeatureFlag:@"raise-hand.enabled" withBoolean:[[meetFeatureFlags objectForKey:@"raise-hand.enabled"] boolValue]];
+            [builder setFeatureFlag:@"recording.enabled" withBoolean:[[meetFeatureFlags objectForKey:@"recording.enabled"] boolValue]];
+            [builder setFeatureFlag:@"welcomepage.enabled" withBoolean:[[meetFeatureFlags objectForKey:@"welcomepage.enabled"] boolValue]];
+
             builder.userInfo = _userInfo;
         }];
         [jitsiMeetView join:options];
@@ -66,7 +88,7 @@ RCT_EXPORT_METHOD(audioCall:(NSString *)urlString userInfo:(NSDictionary *)userI
       }
     }
     dispatch_sync(dispatch_get_main_queue(), ^{
-        JitsiMeetConferenceOptions *options = [JitsiMeetConferenceOptions fromBuilder:^(JitsiMeetConferenceOptionsBuilder *builder) {        
+        JitsiMeetConferenceOptions *options = [JitsiMeetConferenceOptions fromBuilder:^(JitsiMeetConferenceOptionsBuilder *builder) {
             builder.room = urlString;
             builder.userInfo = _userInfo;
             builder.audioOnly = YES;
