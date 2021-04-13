@@ -51,6 +51,7 @@ RCT_EXPORT_METHOD(
     dispatch_sync(dispatch_get_main_queue(), ^{
         JitsiMeetConferenceOptions *options = [JitsiMeetConferenceOptions fromBuilder:^(JitsiMeetConferenceOptionsBuilder *builder) {
             builder.room = urlString;
+            builder.subject = [[meetOptions objectForKey:@"subject"] stringValue];
             builder.videoMuted = [[meetOptions objectForKey:@"videoMuted"] boolValue];
             builder.audioOnly = [[meetOptions objectForKey:@"audioOnly"] boolValue];
             builder.audioMuted = [[meetOptions objectForKey:@"audioMuted"] boolValue];
