@@ -25,6 +25,7 @@ project.xcworkspace
 # Android/IntelliJ
 #
 build/
+android/gradle/wrapper
 .idea
 .gradle
 local.properties
