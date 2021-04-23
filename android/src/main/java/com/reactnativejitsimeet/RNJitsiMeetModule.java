@@ -70,6 +70,7 @@ public class RNJitsiMeetModule extends ReactContextBaseJavaModule {
                         .setFeatureFlag("raise-hand.enabled", meetFeatureFlags.getBoolean("raise-hand.enabled"))
                         .setFeatureFlag("recording.enabled", meetFeatureFlags.getBoolean("recording.enabled"))
                         .setFeatureFlag("welcomepage.enabled", meetFeatureFlags.getBoolean("welcomepage.enabled"))
+                        .setFeatureFlag("invite.enabled", meetFeatureFlags.getBoolean("invite.enabled"))
                         .build();
                     mJitsiMeetViewReference.getJitsiMeetView().join(options);
                 }
