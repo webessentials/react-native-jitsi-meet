@@ -32,7 +32,7 @@ public class RNJitsiMeetModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void call(String url, ReadableMap userInfo) {
+    public void call(String url, ReadableMap userInfo, ReadableMap meetOptions, ReadableMap meetFeatureFlags) {
         UiThreadUtil.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -41,23 +41,37 @@ public class RNJitsiMeetModule extends ReactContextBaseJavaModule {
                     if (userInfo != null) {
                         if (userInfo.hasKey("displayName")) {
                             _userInfo.setDisplayName(userInfo.getString("displayName"));
-                          }
-                          if (userInfo.hasKey("email")) {
+                        }
+                        if (userInfo.hasKey("email")) {
                             _userInfo.setEmail(userInfo.getString("email"));
-                          }
-                          if (userInfo.hasKey("avatar")) {
+                        }
+                        if (userInfo.hasKey("avatar")) {
                             String avatarURL = userInfo.getString("avatar");
                             try {
                                 _userInfo.setAvatar(new URL(avatarURL));
                             } catch (MalformedURLException e) {
                             }
-                          }
+                        }
                     }
                     RNJitsiMeetConferenceOptions options = new RNJitsiMeetConferenceOptions.Builder()
-                            .setRoom(url)
-                            .setAudioOnly(false)
-                            .setUserInfo(_userInfo)
-                            .build();
+                        .setRoom(url)
+                        .setSubject(meetOptions.getString("subject"))
+                        .setAudioMuted(meetOptions.getBoolean("audioMuted"))
+                        .setAudioOnly(meetOptions.getBoolean("audioOnly"))
+                        .setVideoMuted(meetOptions.getBoolean("videoMuted"))
+                        .setUserInfo(_userInfo)
+
+                        .setFeatureFlag("chat.enabled", meetFeatureFlags.getBoolean("chat.enabled"))
+                        .setFeatureFlag("ios.recording.enabled", meetFeatureFlags.getBoolean("ios.recording.enabled"))
+                        .setFeatureFlag("live-streaming.enabled", meetFeatureFlags.getBoolean("live-streaming.enabled"))
+                        .setFeatureFlag("meeting-name.enabled", meetFeatureFlags.getBoolean("meeting-name.enabled"))
+                        .setFeatureFlag("meeting-password.enabled", meetFeatureFlags.getBoolean("meeting-password.enabled"))
+                        .setFeatureFlag("pip.enabled", meetFeatureFlags.getBoolean("pip.enabled"))
+                        .setFeatureFlag("raise-hand.enabled", meetFeatureFlags.getBoolean("raise-hand.enabled"))
+                        .setFeatureFlag("recording.enabled", meetFeatureFlags.getBoolean("recording.enabled"))
+                        .setFeatureFlag("welcomepage.enabled", meetFeatureFlags.getBoolean("welcomepage.enabled"))
+                        .setFeatureFlag("invite.enabled", meetFeatureFlags.getBoolean("invite.enabled"))
+                        .build();
                     mJitsiMeetViewReference.getJitsiMeetView().join(options);
                 }
             }
